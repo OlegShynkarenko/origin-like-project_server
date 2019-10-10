@@ -1,18 +1,19 @@
 import {Router} from "express";
+import bcrypt from 'bcrypt';
 
 import models from "../models";
 
 const router = Router();
 
-router.post('/', (req, res) => {
-
+router.post('/', async (req, res) => {
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
   const user = models.User.create({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     birthDate: req.body.birthDate,
     country: req.body.country,
     email: req.body.email,
-    password: req.body.password
+    password: hashedPassword
   });
 
   return res.send(user)
