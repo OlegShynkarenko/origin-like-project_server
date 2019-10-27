@@ -2,12 +2,11 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import passport from "passport";
-import flash from "express-flash";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 const redis = require('redis');
 const redisStore = require('connect-redis')(session);
-const client = redis.createClient();
+const client = redis.createClient({host: 'redis'});
 
 import { connectDb } from "./models";
 import registerUser from "./routes/registerUser";
