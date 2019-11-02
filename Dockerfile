@@ -6,7 +6,7 @@ COPY package*.json ./
 
 RUN npm install
 
-COPY . .her
+COPY . .
 
 EXPOSE 4000
 
