@@ -4,9 +4,9 @@ import cors from "cors";
 import passport from "passport";
 import session from "express-session";
 import cookieParser from "cookie-parser";
-// const redis = require('redis');
-// const redisStore = require('connect-redis')(session);
-// const client = redis.createClient();
+const redis = require('redis');
+const redisStore = require('connect-redis')(session);
+const client = redis.createClient(process.env.REDIS_URL);
 
 import { connectDb } from "./models";
 import registerUser from "./routes/registerUser";
@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
-    //store: new redisStore({client}),
+    store: new redisStore({url: process.env.REDIS_URL, client}),
     resave: false,
     saveUninitialized: false,
     cookie: {
