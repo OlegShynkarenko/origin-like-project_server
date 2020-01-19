@@ -4,19 +4,57 @@ import cors from "cors";
 import passport from "passport";
 import session from "express-session";
 import cookieParser from "cookie-parser";
+import https from 'https';
 const redis = require('redis');
 const redisStore = require('connect-redis')(session);
 const client = redis.createClient(process.env.REDIS_URL);
+// const redis = require('redis');
+// const redisStore = require('connect-redis')(session);
+// const client = redis.createClient();
+const LocalStrategy = require("passport-local").Strategy;
+const FacebookStrategy = require('passport-facebook').Strategy;
 
-import { connectDb } from "./models";
+import models, { connectDb } from "./models";
 import registerUser from "./routes/registerUser";
 import logIn  from "./routes/logIn";
 import logOut from "./routes/logOut";
 import protectedRoute from "./routes/protectedRoute";
-import initializePassport from "./passport-config";
+import authenticateUser from "./passport-config"
 
 const app = express();
-initializePassport(passport);
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+passport.deserializeUser( (id, done) => {
+  models.User.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
+
+passport.use(new LocalStrategy({ usernameField: 'email' }, authenticateUser));
+
+passport.use(
+  new FacebookStrategy(
+    {
+      clientID: process.env.FACEBOOK_APP_ID,
+      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+      callbackURL: '/auth/facebook/callback',
+      profileFields: ['id', 'name']
+    },
+    (accessToken, refreshToken, profile, done) => {
+      models.User.findOne({ facebookId: profile.id }).then(user => {
+        if (user) {
+          return done(null, user);
+        } else {
+          new models.User({ facebookId: profile.id })
+            .save()
+            .then(user => done(null, user));
+        }
+      });
+    }
+  )
+);
+
 
 app.use(cors());
 app.use(express.json());
@@ -25,6 +63,7 @@ app.use(cookieParser());
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
+    //store: new redisStore({client}),
     store: new redisStore({url: process.env.REDIS_URL, client}),
     resave: false,
     saveUninitialized: false,

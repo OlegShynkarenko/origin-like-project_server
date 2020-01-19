@@ -7,7 +7,7 @@ router.get('/', (req, res) => {
   console.log('Inside GET /login callback function');
   console.log(req.sessionID);
   res.send(`You got the login page!\n`)
-})
+});
 
 router.post('/', (req, res, next) => {
   console.log('Inside POST /login callback')
@@ -23,5 +23,15 @@ router.post('/', (req, res, next) => {
     })
   })(req, res, next);
 });
+
+router.get('/facebook', passport.authenticate('facebook'));
+
+router.get(
+  '/facebook/callback',
+  passport.authenticate('facebook'),
+  (req, res) => {
+    res.redirect('/');
+  }
+);
 
 module.exports = router;

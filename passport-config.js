@@ -1,6 +1,5 @@
 import models from "./models";
 
-const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
 
 const comparePasswords = async (typedPassword, storedPassword) => {
@@ -24,16 +23,4 @@ const authenticateUser = (email, password, done) => {
   });
 };
 
-const initialize = (passport) => {
-  passport.use(new LocalStrategy({ usernameField: 'email' }, authenticateUser));
-  passport.serializeUser((user, done) => {
-    done(null, user.id);
-  });
-  passport.deserializeUser( (id, done) => {
-    models.User.findById(id, function(err, user) {
-      done(err, user);
-    });
-  });
-};
-
-module.exports = initialize;
+module.exports = authenticateUser;
