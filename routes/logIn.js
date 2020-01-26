@@ -1,5 +1,6 @@
 import {Router} from "express";
 import passport from 'passport'
+import {ErrorHandler} from "../error";
 
 const router = Router();
 
@@ -13,14 +14,18 @@ router.post('/', (req, res, next) => {
   console.log('Inside POST /login callback')
   console.log('Post callback', req.sessionID)
   passport.authenticate('local',{session: true}, (err, user, info) => {
-    if(info) {return res.send(info.message)}
-    if(err) {return next(err)}
-    if(!user) {return res.redirect('/api/login')}
-    req.login(user, (err) => {
-      console.log(user.firstName)
+    try {
+      if(info) throw new ErrorHandler(401, info.message);
       if(err) {return next(err)}
-      return res.redirect('/api/auth-required');
-    })
+      if(!user) {return res.redirect('/api/login')}
+      req.login(user, (err) => {
+        console.log(user.firstName)
+        if(err) {return next(err)}
+        return res.redirect('/api/auth-required');
+      })
+    } catch (e) {
+      next(e)
+    }
   })(req, res, next);
 });
 
