@@ -7,13 +7,13 @@ const router = Router();
 
 router.post('/', async (req, res) => {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const hashedPassword = await bcrypt.hash(req.body.data.password, 10);
     await models.User.create({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      birthDate: req.body.birthDate,
-      country: req.body.country,
-      email: req.body.email,
+      firstName: req.body.data.firstName,
+      lastName: req.body.data.lastName,
+      birthDate: req.body.data.birthDate,
+      country: req.body.data.country,
+      email: req.body.data.email,
       password: hashedPassword
     });
     res.send('/login')

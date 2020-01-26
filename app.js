@@ -38,15 +38,15 @@ passport.use(
     {
       clientID: process.env.FACEBOOK_APP_ID,
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-      callbackURL: '/auth/facebook/callback',
+      callbackURL: process.env.FACEBOOK_CALLBACK_URL,
       profileFields: ['id', 'name']
     },
     (accessToken, refreshToken, profile, done) => {
-      models.User.findOne({ facebookId: profile.id }).then(user => {
+      models.User.findOne({ email: profile.id }).then(user => {
         if (user) {
           return done(null, user);
         } else {
-          new models.User({ facebookId: profile.id })
+          new models.User({ email: profile.id })
             .save()
             .then(user => done(null, user));
         }
