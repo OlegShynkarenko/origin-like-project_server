@@ -19,9 +19,11 @@ router.post('/', (req, res, next) => {
       if(err) {return next(err)}
       if(!user) {return res.redirect('/api/login')}
       req.login(user, (err) => {
-        console.log(user.firstName)
         if(err) {return next(err)}
-        return res.redirect('/api/auth-required');
+        return res.json({
+          email: user.email,
+          name: user.firstName,
+        });
       })
     } catch (e) {
       next(e)

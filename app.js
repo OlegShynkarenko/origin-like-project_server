@@ -4,7 +4,6 @@ import cors from "cors";
 import passport from "passport";
 import session from "express-session";
 import cookieParser from "cookie-parser";
-import https from 'https';
 const { handleError, ErrorHandler } = require('./error');
 const redis = require('redis');
 const redisStore = require('connect-redis')(session);
