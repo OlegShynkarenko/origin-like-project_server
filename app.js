@@ -15,6 +15,7 @@ const LocalStrategy = require("passport-local").Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 
 import models, { connectDb } from "./models";
+import gamesList from "./routes/getGamesList";
 import registerUser from "./routes/registerUser";
 import logIn  from "./routes/logIn";
 import logOut from "./routes/logOut";
@@ -76,6 +77,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use("/api/games-list", gamesList);
 app.use("/api/register", registerUser);
 app.use("/api/get-users", registerUser);
 app.use("/api/login", logIn);
