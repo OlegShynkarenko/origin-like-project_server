@@ -5,12 +5,12 @@ import passport from "passport";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 const { handleError, ErrorHandler } = require('./error');
-const redis = require('redis');
-const redisStore = require('connect-redis')(session);
-const client = redis.createClient(process.env.REDIS_URL);
 // const redis = require('redis');
 // const redisStore = require('connect-redis')(session);
-// const client = redis.createClient();
+// const client = redis.createClient(process.env.REDIS_URL);
+const redis = require('redis');
+const redisStore = require('connect-redis')(session);
+const client = redis.createClient();
 const LocalStrategy = require("passport-local").Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 
@@ -64,8 +64,8 @@ app.use(cookieParser());
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
-    //store: new redisStore({client}),
-    store: new redisStore({url: process.env.REDIS_URL, client}),
+    store: new redisStore({client}),
+    //store: new redisStore({url: process.env.REDIS_URL, client}),
     resave: false,
     saveUninitialized: false,
     cookie: {
