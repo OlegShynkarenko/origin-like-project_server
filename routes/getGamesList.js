@@ -1,17 +1,24 @@
 import {Router} from "express";
-import {ErrorHandler} from "../error";
-import fetch from 'node-fetch'
+
+import {GogGames} from '../GogGames';
 
 const router = Router();
 
 router.get('/', async (req, res) => {
-  try {
-    const req = await fetch('https://embed.gog.com/games/ajax/filtered?mediaType=game&limit=20');
-    const data = await req.json();
-    res.send(data);
-  } catch (e) {
-    throw new ErrorHandler(e.statusCode, e.statusText);
-  }
+  const api = new GogGames();
+  const games = await api.getGamesList();
+  const filteredData = games.products.map(el => {
+    return {
+      id: el.id,
+      title: el.title,
+      category: el.category,
+      worksOnWindows: el.worksOn.Windows,
+      worksOnMac: el.worksOn.Mac,
+      worksOnLinux: el.worksOn.Linux,
+      price: el.price.finalAmount,
+    }
+  });
+  res.send(filteredData);
 });
 
 module.exports = router;
