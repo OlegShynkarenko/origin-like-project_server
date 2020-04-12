@@ -5,16 +5,17 @@ import passport from "passport";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 const { handleError, ErrorHandler } = require('./error');
-const redis = require('redis');
-const redisStore = require('connect-redis')(session);
-const client = redis.createClient(process.env.REDIS_URL);
 // const redis = require('redis');
 // const redisStore = require('connect-redis')(session);
-// const client = redis.createClient();
+// const client = redis.createClient(process.env.REDIS_URL);
+const redis = require('redis');
+const redisStore = require('connect-redis')(session);
+const client = redis.createClient();
 const LocalStrategy = require("passport-local").Strategy;
 const FacebookStrategy = require('passport-facebook').Strategy;
 
 import models, { connectDb } from "./models";
+import gamesList from "./routes/getGamesList";
 import registerUser from "./routes/registerUser";
 import logIn  from "./routes/logIn";
 import logOut from "./routes/logOut";
@@ -63,8 +64,8 @@ app.use(cookieParser());
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
-    //store: new redisStore({client}),
-    store: new redisStore({url: process.env.REDIS_URL, client}),
+    store: new redisStore({client}),
+    //store: new redisStore({url: process.env.REDIS_URL, client}),
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -76,6 +77,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use("/api/games-list", gamesList);
 app.use("/api/register", registerUser);
 app.use("/api/get-users", registerUser);
 app.use("/api/login", logIn);
