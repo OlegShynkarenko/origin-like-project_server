@@ -1,12 +1,11 @@
 import fetch from "node-fetch";
 import {ErrorHandler} from "./error";
 
-export class GogGames {
+class GogGames {
 
-  async getGamesList(limit) {
+  async getGamesList(page, limit) {
     try {
-      let url = 'https://embed.gog.com/games/ajax/filtered?mediaType=game&limit=20';
-      if (limit) url = `https://embed.gog.com/games/ajax/filtered?mediaType=game&limit=${limit}`;
+      const url = `https://embed.gog.com/games/ajax/filtered?mediaType=game&page=${page}&limit=${limit}`;
       const req = await fetch(url);
       return await req.json();
     } catch (e) {
@@ -14,3 +13,5 @@ export class GogGames {
     }
   }
 }
+
+export const api = new GogGames();

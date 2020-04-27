@@ -1,13 +1,13 @@
 import {Router} from "express";
 
-import {GogGames} from '../GogGames';
+import {api} from '../GogGames';
 
 const router = Router();
 
 router.get('/', async (req, res) => {
-  const api = new GogGames();
-  const games = await api.getGamesList();
-  const filteredData = games.products.map(el => {
+  const url = new URLSearchParams(req.query);
+  const data = await api.getGamesList(url.get('page'), url.get('limit'));
+  const filteredData = data.products.map(el => {
     return {
       id: el.id,
       title: el.title,
@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
       price: el.price.finalAmount,
     }
   });
-  res.send(filteredData);
+  res.send([...filteredData, data.totalPages]);
 });
 
 module.exports = router;
