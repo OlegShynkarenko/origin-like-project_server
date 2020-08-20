@@ -33,7 +33,7 @@
     "@babel/core": "^7.6.2",
     "@babel/node": "^7.6.2",
     "@babel/preset-env": "^7.6.2",
-    "bcrypt": "^3.0.6",
+    "bcrypt": "^5.0.0",
     "prettier": "^1.18.2"
   }
 }
